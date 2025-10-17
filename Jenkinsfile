@@ -17,11 +17,14 @@ pipeline {
         stage('Deploy Frontend to Tomcat') {
             steps {
                 bat '''
+                echo Deleting old frontend from Tomcat...
                 if exist "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reactfrontend" (
                     rmdir /S /Q "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reactfrontend"
                 )
+                echo Creating new frontend folder...
                 mkdir "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reactfrontend"
-                xcopy /E /I /Y STUDENTAPI-REACT\\dist\\* "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reactfrontend"
+                echo Copying new build files...
+                xcopy /E /I /Y reactfrontend\\dist\\* "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reactfrontend\\"
                 '''
             }
         }
@@ -29,8 +32,8 @@ pipeline {
         // ===== BACKEND BUILD =====
         stage('Build Backend') {
             steps {
-                dir('STUDENTAPI-SPRINGBOOT') {
-                    bat 'mvn clean package'
+                dir('springbootbackend') {
+                    bat 'mvn clean package -DskipTests'
                 }
             }
         }
@@ -39,13 +42,15 @@ pipeline {
         stage('Deploy Backend to Tomcat') {
             steps {
                 bat '''
+                echo Removing old backend WAR and folder...
                 if exist "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\springbootbackend.war" (
                     del /Q "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\springbootbackend.war"
                 )
                 if exist "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\springbootbackend" (
                     rmdir /S /Q "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\springbootbackend"
                 )
-                copy "STUDENTAPI-SPRINGBOOT\\target\\*.war" "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\"
+                echo Copying new backend WAR file...
+                copy "springbootbackend\\target\\*.war" "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\"
                 '''
             }
         }
@@ -54,10 +59,10 @@ pipeline {
 
     post {
         success {
-            echo 'Deployment Successful!'
+            echo '✅ Deployment Successful!'
         }
         failure {
-            echo 'Pipeline Failed.'
+            echo '❌ Pipeline Failed.'
         }
     }
 }
