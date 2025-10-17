@@ -7,12 +7,14 @@
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>3.5.6</version>
 		<relativePath/> <!-- lookup parent from repository -->
+		
 	</parent>
 	<groupId>com.klef.dev</groupId>
 	<artifactId>springbootbackend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>springbootbackend</name>
 	<description>Spring Boot Backend Project</description>
+	<packaging>war</packaging>
 	<url/>
 	<licenses>
 		<license/>
@@ -63,6 +65,7 @@
 	</dependencies>
 
 	<build>
+	<finalName>springbootbackend</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
